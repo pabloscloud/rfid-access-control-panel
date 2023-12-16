@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('Admin') }}
         </h2>
     </x-slot>
 
@@ -10,7 +10,7 @@
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 @if($chips->isNotEmpty())
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("These are chips assigned to you. Use them alongside your pin ;)") }}
+                    {{ __("These are all the chips. They can be used alongside their pin ;)") }}
                 </div>
 
                 <div class="px-6 py-4">
@@ -18,7 +18,7 @@
                     <div class="py-4 text-gray-900 dark:text-gray-100">
                         <div class="flex justify-between">
                             <div class="flex">
-                                <x-heroicon-o-key class="h-6 w-6 mr-3 text-indigo-600" /> {{ $chip->name }}
+                                <x-heroicon-o-key class="h-6 w-6 mr-3 text-indigo-600" /> {{ $chip->name }} owned by {{ $chip->user->name }}
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -35,7 +35,7 @@
 
                 @else
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("There are no chips assigned to you. Ask your admin to go get you some xD") }}
+                    {{ __("There are no chips. Go on, make yourself useful and add some!") }}
                 </div>
                 @endif
             </div>
@@ -55,7 +55,7 @@
                     <div class="py-4 {{ $log->success === 0 ? 'text-red-600' : 'text-gray-900 dark:text-gray-100' }}">
                         <div class="flex justify-between">
                             <div class="flex">
-                                <x-heroicon-o-key class="h-6 w-6 mr-3 text-{{ $log->success === 0 ? 'red' : 'green' }}-600" /> {{ $log->chip->name }}
+                                <x-heroicon-o-key class="h-6 w-6 mr-3 text-{{ $log->success === 0 ? 'red' : 'green' }}-600" /> {{ $log->chip->name }} owned by {{ $log->chip->user->name }}
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -72,7 +72,7 @@
 
                 @else
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("There are no logs regarding your chips usage. Try and see if they work. If not, you should blame your admin!") }}
+                    {{ __("There are no logs regarding chips usage. Try and see if they work. If not, blame yourself!") }}
                 </div>
                 @endif
             </div>
