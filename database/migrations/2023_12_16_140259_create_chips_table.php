@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('chips', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('uid')->unique();
+            $table->string('uid')->unique();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 

@@ -9,8 +9,8 @@ class DashboardController extends Controller
 {
     public function show()
     {
-        $chips = Auth::user()->chips;
-        $logs = Auth::user()->logs;
+        $chips = Auth::user()->chips()->orderBy('created_at', 'desc')->get();
+        $logs = Auth::user()->logs()->orderBy('created_at', 'desc')->get();
 
         return view('dashboard', [
             'chips' => $chips,

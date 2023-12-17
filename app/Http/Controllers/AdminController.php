@@ -12,8 +12,8 @@ class AdminController extends Controller
     public function show()
     {
         if(Auth::User()->isAdmin()) {
-            $chips = Chip::all();
-            $logs = Log::all();
+            $chips = Chip::orderBy('created_at', 'desc')->get();
+            $logs = Log::orderBy('created_at', 'desc')->get();
 
             return view('admin', [
                 'chips' => $chips,
