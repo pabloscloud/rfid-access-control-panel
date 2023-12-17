@@ -26,126 +26,142 @@ class ApiController extends Controller
 
     public function showChip(Request $r)
     {
-        if (Auth::guard('api')->user()->isAdmin()){
-            $chip = Chip::where('uid', $r->uid)->first();
+        if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->user()->isAdmin()){
+                $chip = Chip::where('uid', $r->uid)->first();
 
-            if($chip){
-                return response()->json(['message' => 'Here\'s your chip! Eat it or whatever..', 'data' => $chip], 200);
+                if($chip){
+                    return response()->json(['message' => 'Here\'s your chip! Eat it or whatever..', 'data' => $chip], 200);
+                } else {
+                    return response()->json(['message' => 'No such chip. Add it first!'], 404);
+                }
             } else {
-                return response()->json(['message' => 'No such chip. Add it first!'], 404);
+                return response()->json(['error' => 'Forbidden :/'], 403);
             }
         } else {
-            return response()->json(['error' => 'Forbidden :/'], 403);
+            return response()->json(['error' => 'Unauthorized :/'], 401);
         }
     }
 
     public function addChip(Request $r)
     {
-        if (Auth::guard('api')->user()->isAdmin()) {
-            try {
-                $chip = Chip::create([
-                    'name' => $r->query('name'),
-                    'uid' => $r->query('uid'),
-                    'user_id' => $r->query('user'),
-                ]);
-                return response()->json(['message' => 'Chip created successfully :)', 'data' => $chip], 201);
-            } catch (\Illuminate\Database\QueryException $e) {
-                // Unique constraint violation handling
-                if ($e->errorInfo[1] == 1062) {
-                    return response()->json(['error' => 'Chip conflicts with an existing chip :/'], 409);
+        if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->user()->isAdmin()){
+                try {
+                    $chip = Chip::create([
+                        'name' => $r->query('name'),
+                        'uid' => $r->query('uid'),
+                        'user_id' => $r->query('user'),
+                    ]);
+                    return response()->json(['message' => 'Chip created successfully :)', 'data' => $chip], 201);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    // Unique constraint violation handling
+                    if ($e->errorInfo[1] == 1062) {
+                        return response()->json(['error' => 'Chip conflicts with an existing chip :/'], 409);
+                    }
+                    // Other database-related errors
+                    return response()->json(['error' => 'Failed to create chip :/'], 500);
                 }
-                // Other database-related errors
-                return response()->json(['error' => 'Failed to create chip :/'], 500);
+            } else {
+                return response()->json(['error' => 'Forbidden :/'], 403);
             }
         } else {
-            return response()->json(['error' => 'Forbidden :/'], 403);
+            return response()->json(['error' => 'Unauthorized :/'], 401);
         }
     }
 
     public function addLog(Request $r)
     {
-        if (Auth::guard('api')->user()->isAdmin()) {
-            try {
-                $chip = Chip::where('uid', $r->uid)->first();
+        if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->user()->isAdmin()){
+                try {
+                    $chip = Chip::where('uid', $r->uid)->first();
 
-                if ($chip) {
-                    $pin = $r->query('pin');
-                    $user = $chip->user;
-                    $userInRooms = UserInRooms::where('user_id', $user->id);
+                    if ($chip) {
+                        $pin = $r->query('pin');
+                        $user = $chip->user;
+                        $userInRooms = UserInRooms::where('user_id', $user->id);
 
-                    if ($pin) {
-                        if($user->attempts < 3) {
-                            $success = Hash::check($pin, $user->pin);
+                        if ($pin) {
+                            if($user->attempts < 3) {
+                                $success = Hash::check($pin, $user->pin);
 
-                            if ($success) {
-                                if ($userInRooms->count() <= 0) {
-                                    UserInRooms::create([
+                                if ($success) {
+                                    if ($userInRooms->count() <= 0) {
+                                        UserInRooms::create([
+                                            'user_id' => $user->id,
+                                        ]);
+                                    }
+
+                                    $log = Log::create([
                                         'user_id' => $user->id,
+                                        'chip_id' => $chip->id,
+                                        'success' => $success,
                                     ]);
+
+                                    return response()->json(['message' => 'Log created successfully. User added to room!', 'data' => $log], 201);
+                                } else {
+                                    $user->update([
+                                        'attempts' => $user->attempts + 1,
+                                    ]);
+
+                                    $log = Log::create([
+                                        'user_id' => $user->id,
+                                        'chip_id' => $chip->id,
+                                        'success' => $success,
+                                    ]);
+
+                                    return response()->json(['message' => 'Log created successfully. Wrong pin!', 'data' => $log], 201);
                                 }
-
-                                $log = Log::create([
-                                    'user_id' => $user->id,
-                                    'chip_id' => $chip->id,
-                                    'success' => $success,
-                                ]);
-
-                                return response()->json(['message' => 'Log created successfully. User added to room!', 'data' => $log], 201);
                             } else {
-                                $user->update([
-                                    'attempts' => $user->attempts + 1,
-                                ]);
-
-                                $log = Log::create([
-                                    'user_id' => $user->id,
-                                    'chip_id' => $chip->id,
-                                    'success' => $success,
-                                ]);
-
-                                return response()->json(['message' => 'Log created successfully. Wrong pin!', 'data' => $log], 201);
+                                return response()->json(['error' => 'Too many unsuccessful attempts!'], 429);
                             }
                         } else {
-                            return response()->json(['error' => 'Too many unsuccessful attempts!'], 429);
+                            if ($userInRooms) {
+                                $userInRooms->delete();
+
+                                return response()->json(['message' => 'User removed from room!'], 201);
+                            } else {
+                                return response()->json(['message' => 'User not in here.'], 201);
+                            }
                         }
                     } else {
-                        if ($userInRooms) {
-                            $userInRooms->delete();
-
-                            return response()->json(['message' => 'User removed from room!'], 201);
-                        } else {
-                            return response()->json(['message' => 'User not in here.'], 201);
-                        }
+                        return response()->json(['error' => 'No such chip. Add it first!'], 404);
                     }
-                } else {
-                    return response()->json(['error' => 'No such chip. Add it first!'], 404);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    return response()->json(['error' => 'Failed to create log :/', 'data' => $e], 500);
                 }
-            } catch (\Illuminate\Database\QueryException $e) {
-                return response()->json(['error' => 'Failed to create log :/', 'data' => $e], 500);
+            } else {
+                return response()->json(['error' => 'Forbidden :/'], 403);
             }
         } else {
-            return response()->json(['error' => 'Forbidden :/'], 403);
+            return response()->json(['error' => 'Unauthorized :/'], 401);
         }
     }
 
     public function showUserInRooms(Request $r)
     {
-        if (Auth::guard('api')->user()->isAdmin()){
-            $showUserInRooms = UserInRooms::all();
+        if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->user()->isAdmin()){
+                $showUserInRooms = UserInRooms::all();
 
-            if($showUserInRooms->isNotEmpty()){
-                return response()->json([
-                    'message' => 'Users who are inside.',
-                    'count' => $showUserInRooms->count(),
-                    'data' => $showUserInRooms
-                ], 200);
+                if($showUserInRooms->isNotEmpty()){
+                    return response()->json([
+                        'message' => 'Users who are inside.',
+                        'count' => $showUserInRooms->count(),
+                        'data' => $showUserInRooms
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'No users inside!',
+                        'count' => 0
+                    ], 404);
+                }
             } else {
-                return response()->json([
-                    'message' => 'No users inside!',
-                    'count' => 0
-                ], 404);
+                return response()->json(['error' => 'Forbidden :/'], 403);
             }
         } else {
-            return response()->json(['error' => 'Forbidden :/'], 403);
+            return response()->json(['error' => 'Unauthorized :/'], 401);
         }
     }
 }
