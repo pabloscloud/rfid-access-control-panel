@@ -47,7 +47,7 @@
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 @if($logs->isNotEmpty())
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("These are logs regarding your chips. Something seems sus? Investigate!") }}
+                    {{ __("These are logs regarding chips usage. Something seems sus? Investigate!") }}
                 </div>
 
                 <div class="px-6 py-4">
