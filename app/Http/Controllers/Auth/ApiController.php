@@ -28,6 +28,7 @@ class ApiController extends Controller
     {
         if (Auth::guard('api')->user()->isAdmin()){
             $chip = Chip::where('uid', $r->uid)->first();
+
             if($chip){
                 return response()->json(['message' => 'Here\'s your chip! Eat it or whatever..', 'data' => $chip], 200);
             } else {
@@ -120,6 +121,28 @@ class ApiController extends Controller
                 }
             } catch (\Illuminate\Database\QueryException $e) {
                 return response()->json(['error' => 'Failed to create log :/', 'data' => $e], 500);
+            }
+        } else {
+            return response()->json(['error' => 'Forbidden :/'], 403);
+        }
+    }
+
+    public function showUserInRooms(Request $r)
+    {
+        if (Auth::guard('api')->user()->isAdmin()){
+            $showUserInRooms = UserInRooms::all();
+
+            if($showUserInRooms->isNotEmpty()){
+                return response()->json([
+                    'message' => 'Users who are inside.',
+                    'count' => $showUserInRooms->count(),
+                    'data' => $showUserInRooms
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'No users inside!',
+                    'count' => 0
+                ], 404);
             }
         } else {
             return response()->json(['error' => 'Forbidden :/'], 403);

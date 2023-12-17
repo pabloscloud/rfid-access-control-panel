@@ -23,4 +23,5 @@ Route::prefix('v1')->group(function () {
     Route::get('/chip/{uid}', [ApiController::class, 'showChip']);
     Route::put('/chip', [ApiController::class, 'addChip']);
     Route::put('/log', [ApiController::class, 'addLog']);
+    Route::get('/inside', [ApiController::class, 'showUserInRooms']);
 });
