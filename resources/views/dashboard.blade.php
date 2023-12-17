@@ -8,6 +8,23 @@
     <div class="py-3">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                @if($userInRooms->isNotEmpty())
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You are inside. You're not? Hold your chip against the reader!") }}
+                </div>
+
+                @else
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You're not inside. You are? Please hold your chip against the reeder and enter your pin!") }}
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <div class="py-3">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 @if($chips->isNotEmpty())
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("These are chips assigned to you. Use them alongside your pin ;)") }}
@@ -42,7 +59,7 @@
         </div>
     </div>
 
-<div class="py-3">
+    <div class="py-3">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 @if($logs->isNotEmpty())

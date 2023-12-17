@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Chip;
+use App\Models\UserInRooms;
 
 class User extends Authenticatable
 {
@@ -59,6 +60,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Log::class);
     }
+
+    public function userInRooms(): HasMany
+        {
+            return $this->hasMany(UserInRooms::class);
+        }
 
     public function isAdmin(): bool
     {

@@ -42,12 +42,12 @@
         </div>
     </div>
 
-<div class="py-3">
+    <div class="py-3">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 @if($logs->isNotEmpty())
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("These are logs regarding your chips. Something seems sus? Report it to your admin to investigate :/") }}
+                    {{ __("These are logs regarding your chips. Something seems sus? Investigate!") }}
                 </div>
 
                 <div class="px-6 py-4">
@@ -73,6 +73,134 @@
                 @else
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("There are no logs regarding chips usage. Try and see if they work. If not, blame yourself!") }}
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <div class="py-3">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                @if($userInRooms->isNotEmpty())
+                <style>
+                    .avatar-wrapper {
+                      display: inline-block; /* Ensures avatars appear in a row */
+                      margin: 5px; /* Adjust as needed */
+                    }
+
+                    .avatar {
+                      box-sizing: border-box;
+                      border-radius: 50%;
+                      overflow: hidden;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      text-align: center;
+                      padding: 5px;
+                      box-shadow: 0 15px 15px 0px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .avatar p {
+                      margin: 0;
+                    }
+
+                    .floater {
+                    	transform: translate(0px);
+                    	animation: float 7s ease-in-out infinite;
+                    	box-shadow: 0 15px 15px 0px rgba(0,0,0,0.2);
+                    }
+
+                    .delay {
+                    	animation-delay: 2s;
+                    }
+
+                    @keyframes float {
+                    	0% {
+                    		transform: translatey(0px);
+                    	}
+                      	5% {
+                    		transform: translatey(0px);
+                    	}
+                    	50% {
+                    		transform: translatey(-15px);
+                    	}
+                    	95% {
+                    		transform: translatey(0px);
+                    	}
+                      	100% {
+                    		transform: translatey(0px);
+                    	}
+                    }
+
+                    @keyframes float-2 {
+                    	0% {
+                    		transform: translatey(0px);
+                    	}
+                      	5% {
+                    		transform: translatey(0px);
+                    	}
+                    	50% {
+                    		transform: translatey(-15px);
+                    	}
+                    	95% {
+                    		transform: translatey(0px);
+                    	}
+                      	100% {
+                    		transform: translatey(0px);
+                    	}
+                    }
+
+                    @keyframes float-alt {
+                    	0% {
+                    		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+                    		transform: translatey(0px);
+                    	}
+                      	5% {
+                    		transform: translatey(0px);
+                    	}
+                    	50% {
+                    		box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);
+                    		transform: translatey(-20px);
+                    	}
+                    	95% {
+                    		box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);
+                    		transform: translatey(0px);
+                    	}
+                      	100% {
+                    		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+                    		transform: translatey(0px);
+                    	}
+                    }
+                </style>
+                <script>
+                    window.addEventListener('DOMContentLoaded', () => {
+                      const avatars = document.querySelectorAll('.avatar p');
+                      avatars.forEach((avatar) => {
+                        const nameLength = avatar.textContent.trim().length;
+                        const diameter = 40 + nameLength * 10; // Adjust the multiplier to suit your design
+                        avatar.closest('.avatar').style.width = `${diameter}px`;
+                        avatar.closest('.avatar').style.height = `${diameter}px`;
+                      });
+                    });
+                </script>
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("These are the users, who are inside. Something seems sus? Investigate!") }}
+                </div>
+
+                <div class="px-6 py-4">
+                @foreach($userInRooms as $key => $userInRoom)
+                    <div class="avatar-wrapper">
+                        <div class="avatar floater @if($key % 2 != 0) delay @endif bg-gray-100 dark:bg-gray-700">
+                            <p class="text-gray-900 dark:text-gray-100">{{$userInRoom->user->name}}</p>
+                        </div>
+                    </div>
+                @endforeach
+                </div>
+
+                @else
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("There are no users inside. Can they get inside? If not, blame yourself!") }}
                 </div>
                 @endif
             </div>
