@@ -24,7 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'pin'
+        'pin',
+        'attempts',
+        'role'
     ];
 
     /**
@@ -47,15 +49,6 @@ class User extends Authenticatable
         'password' => 'hashed',
         'pin' => 'hashed'
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($user) {
-            $user->pin = Str::random(6);
-        });
-    }
 
     public function chips(): HasMany
     {

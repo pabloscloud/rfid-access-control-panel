@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chips', function (Blueprint $table) {
+        Schema::create('user_in_rooms', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('uid')->unique();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unique(['user_id', 'name']);
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chips');
+        Schema::dropIfExists('user_in_rooms');
     }
 };
