@@ -5,6 +5,46 @@
         </h2>
     </x-slot>
 
+    @if($chipsUnassigned->isNotEmpty())
+        <div class="py-3">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        {{ __("There are unassigned chips. Please assign them to users or delete them!") }}
+                    </div>
+
+                    <div class="px-6 py-4">
+                        @foreach($chipsUnassigned as $chip)
+                            <div class="py-4 text-gray-900 dark:text-gray-100">
+                                <div class="flex items-center flex-wrap gap-4">
+                                    <x-heroicon-o-key class="h-6 w-6 text-indigo-600" />
+                                    <form action="{{ route('admin.chip.assign', ['chip' => $chip]) }}" method="post" class="form-group flex items-center space-x-3 flex-wrap" onsubmit="prepareData(event)">
+                                        @csrf
+                                        @method('put')
+                                        <x-text-input name="chip_name" value="{{ $chip->name }}" />
+                                        <select class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mb-2 sm:mb-0" name="user_id">
+                                            <option value="">Assign User</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <x-primary-button>{{ __('Assign') }}</x-primary-button>
+                                    </form>
+
+                                    <form action="{{ route('admin.chip.delete', ['chip' => $chip]) }}" method="post" class="mt-3 sm:mt-0">
+                                        @csrf
+                                        @method('delete')
+                                        <x-danger-button>{{ __('Delete') }}</x-danger-button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="py-3">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-gray-300 dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

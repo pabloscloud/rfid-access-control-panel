@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\AdminController;
 use App\Http\Controllers\Auth\ApiController;
 use App\Http\Controllers\Auth\PinController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -59,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::put('apikey', [ApiController::class, 'updateKey'])->name('apikey.update');
 
     Route::put('pin', [PinController::class, 'updatePin'])->name('pin.update');
+
+    Route::delete('/admin/chip/{chip}/delete', [AdminController::class, 'deleteChip'])->name('admin.chip.delete');
+    Route::put('/admin/chip/{chip}/assign', [AdminController::class, 'assignUserToChip'])->name('admin.chip.assign');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');

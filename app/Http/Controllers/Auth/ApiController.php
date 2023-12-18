@@ -75,11 +75,13 @@ class ApiController extends Controller
         if (Auth::guard('api')->check()) {
             if (Auth::guard('api')->user()->isAdmin()){
                 try {
-                    $chip = Chip::where('uid', $r->uid)->first();
+                    $assignedChip = Chip::where('uid', $r->uid)
+                        ->whereNotNull('user_id')
+                        ->first();
 
-                    if ($chip) {
+                    if ($assignedChip) {
                         $pin = $r->query('pin');
-                        $user = $chip->user;
+                        $user = $assignedChip->user;
                         $userInRooms = UserInRooms::where('user_id', $user->id);
 
                         if ($pin) {
@@ -95,11 +97,11 @@ class ApiController extends Controller
 
                                     $log = Log::create([
                                         'user_id' => $user->id,
-                                        'chip_id' => $chip->id,
+                                        'chip_id' => $assignedChip->id,
                                         'success' => $success,
                                     ]);
 
-                                    return response()->json(['message' => 'Log created successfully. User added to room!', 'data' => $log], 201);
+                                    return response()->json(['message' => 'Log created successfully! User added to room!', 'data' => $log], 201);
                                 } else {
                                     $user->update([
                                         'attempts' => $user->attempts + 1,
@@ -107,11 +109,11 @@ class ApiController extends Controller
 
                                     $log = Log::create([
                                         'user_id' => $user->id,
-                                        'chip_id' => $chip->id,
+                                        'chip_id' => $assignedChip->id,
                                         'success' => $success,
                                     ]);
 
-                                    return response()->json(['message' => 'Log created successfully. Wrong pin!', 'data' => $log], 201);
+                                    return response()->json(['message' => 'Log created successfully! Wrong pin!', 'data' => $log], 201);
                                 }
                             } else {
                                 return response()->json(['error' => 'Too many unsuccessful attempts!'], 429);
@@ -126,7 +128,17 @@ class ApiController extends Controller
                             }
                         }
                     } else {
-                        return response()->json(['error' => 'No such chip. Add it first!'], 404);
+                        $chip = Chip::where('uid', $r->uid)->first();
+
+                        if ($chip) {
+                            return response()->json(['error' => 'Chip already submitted. Waiting for admin to assign the chip!'], 409);
+                        } else {
+                            $chip = Chip::create([
+                                'name' => $r->query('pin'),
+                                'uid' => $r->query('uid'),
+                            ]);
+                            return response()->json(['error' => 'No such chip. Chip added to database! '], 409);
+                        }
                     }
                 } catch (\Illuminate\Database\QueryException $e) {
                     return response()->json(['error' => 'Failed to create log :/', 'data' => $e], 500);
