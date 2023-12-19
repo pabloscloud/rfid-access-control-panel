@@ -122,9 +122,9 @@ class ApiController extends Controller
                             if ($userInRooms) {
                                 $userInRooms->delete();
 
-                                return response()->json(['message' => 'User removed from room!'], 201);
+                                return response()->json(['message' => 'User removed from room!'], 200);
                             } else {
-                                return response()->json(['message' => 'User not in here.'], 201);
+                                return response()->json(['message' => 'User not in here.'], 404);
                             }
                         }
                     } else {
@@ -137,7 +137,7 @@ class ApiController extends Controller
                                 'name' => $r->query('pin'),
                                 'uid' => $r->query('uid'),
                             ]);
-                            return response()->json(['error' => 'No such chip. Chip added to database! '], 409);
+                            return response()->json(['error' => 'No such chip. Chip added to database!'], 409);
                         }
                     }
                 } catch (\Illuminate\Database\QueryException $e) {
