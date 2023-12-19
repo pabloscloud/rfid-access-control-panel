@@ -16,7 +16,7 @@
                     <div class="px-6 py-4">
                         @foreach($chipsUnassigned as $chip)
                             <div class="py-4 text-gray-900 dark:text-gray-100">
-                                <div class="flex items-center flex-wrap gap-4">
+                                <div class="items-center flex-wrap gap-4 hidden md:-my-px md:md-10 md:flex">
                                     <x-heroicon-o-key class="h-6 w-6 text-indigo-600" />
                                     <form action="{{ route('admin.chip.assign', ['chip' => $chip]) }}" method="post" class="form-group flex items-center space-x-3 flex-wrap" onsubmit="prepareData(event)">
                                         @csrf
@@ -36,6 +36,64 @@
                                         @method('delete')
                                         <x-danger-button>{{ __('Delete') }}</x-danger-button>
                                     </form>
+                                </div>
+                                <div class="flex items-center flex-wrap gap-4 md:hidden">
+                                    <x-heroicon-o-key class="h-6 w-6 mr-3 text-indigo-600" /> {{ $chip->name }}
+
+                                    <x-primary-button
+                                            x-data=""
+                                            x-on:click.prevent="$dispatch('open-modal', 'assign-chip-user')"
+                                        >{{ __('Assign') }}</x-primary-button>
+
+                                    <form action="{{ route('admin.chip.delete', ['chip' => $chip]) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <x-danger-button>{{ __('Delete') }}</x-danger-button>
+                                    </form>
+
+                                    <x-modal name="assign-chip-user" focusable>
+                                        <form method="post" action="{{ route('admin.chip.assign', ['chip' => $chip]) }}" class="p-6">
+                                            @csrf
+                                            @method('put')
+
+                                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                {{ __('Which user do you want to assign this chip to?') }}
+                                            </h2>
+
+                                            <div class="mt-6">
+                                                <div class="mt-2">
+                                                    <x-input-label for="chip_name" value="{{ __('Chip Name') }}" />
+                                                    <x-text-input
+                                                        id="chip_name"
+                                                        name="chip_name"
+                                                        class="mt-1 block w-full"
+                                                        value="{{ $chip->name }}"
+                                                        placeholder="{{ $chip->name }}"
+                                                    />
+                                                </div>
+
+                                                <div class="mt-2">
+                                                    <x-input-label for="chip_name" value="{{ __('Chip User') }}" />
+                                                    <select name="user_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mb-2 sm:mb-0">
+                                                        <option value="">Assign User</option>
+                                                        @foreach($users as $user)
+                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-6 flex justify-end">
+                                                <x-secondary-button x-on:click="$dispatch('close')">
+                                                    {{ __('Cancel') }}
+                                                </x-secondary-button>
+
+                                                <x-primary-button class="ms-3">
+                                                    {{ __('Assign') }}
+                                                </x-primary-button>
+                                            </div>
+                                        </form>
+                                    </x-modal>
                                 </div>
                             </div>
                         @endforeach
