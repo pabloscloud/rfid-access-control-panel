@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -100,6 +101,10 @@ class ApiController extends Controller
                                         'chip_id' => $assignedChip->id,
                                         'success' => $success,
                                     ]);
+
+                                    if(env('NODREDTRYTURNOFF')) {
+                                        Http::get(env('NODREDTRYTURNOFF'));
+                                    }
 
                                     return response()->json(['message' => 'Log created successfully! User added to room!', 'data' => $log], 201);
                                 } else {
