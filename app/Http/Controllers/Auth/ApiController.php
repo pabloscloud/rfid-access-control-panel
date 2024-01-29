@@ -96,7 +96,7 @@ class ApiController extends Controller
                                         ]);
                                     }
 
-                                    var create_log = true;
+                                    $create_log = true;
                                     if (env('NODEREDCHECKSTATUS') && env('NODEREDTRYTURNOFF')) {
                                         $response = Http::get(env('NODEREDCHECKSTATUS'));
 
