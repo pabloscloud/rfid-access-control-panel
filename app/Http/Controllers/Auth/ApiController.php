@@ -105,7 +105,7 @@ class ApiController extends Controller
                                             $alarmStatus = $data['data']['alarm_on'];
 
                                             if ($alarmStatus === true) {
-                                                create_log = false;
+                                                $create_log = false;
 
                                                 UserInRooms::truncate();
 
@@ -114,7 +114,7 @@ class ApiController extends Controller
                                         }
                                     }
 
-                                    if (create_log == true) {
+                                    if ($create_log == true) {
                                         $log = Log::create([
                                             'user_id' => $user->id,
                                             'chip_id' => $assignedChip->id,
