@@ -97,21 +97,8 @@ class ApiController extends Controller
                                     }
 
                                     $create_log = true;
-                                    if (env('NODEREDCHECKSTATUS') && env('NODEREDTRYTURNOFF')) {
-                                        $response = Http::get(env('NODEREDCHECKSTATUS'));
-
-                                        if ($response->successful()) {
-                                            $data = $response->json();
-                                            $alarmStatus = $data['data']['alarm_on'];
-
-                                            if ($alarmStatus === true) {
-                                                $create_log = false;
-
-                                                UserInRooms::truncate();
-
-                                                Http::get(env('NODREDTRYTURNOFF'));
-                                            }
-                                        }
+                                    if (env('NODEREDTRYTURNOFF')) {
+                                        Http::get(env('NODEREDTRYTURNOFF'));
                                     }
 
                                     if ($create_log == true) {
