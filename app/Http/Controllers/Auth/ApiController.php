@@ -96,14 +96,30 @@ class ApiController extends Controller
                                         ]);
                                     }
 
-                                    $log = Log::create([
-                                        'user_id' => $user->id,
-                                        'chip_id' => $assignedChip->id,
-                                        'success' => $success,
-                                    ]);
+                                    var create_log = true;
+                                    if (env('NODEREDCHECKSTATUS') && env('NODEREDTRYTURNOFF')) {
+                                        $response = Http::get(env('NODEREDCHECKSTATUS'));
 
-                                    if(env('NODREDTRYTURNOFF')) {
-                                        Http::get(env('NODREDTRYTURNOFF'));
+                                        if ($response->successful()) {
+                                            $data = $response->json();
+                                            $alarmStatus = $data['data']['alarm_on'];
+
+                                            if ($alarmStatus === true) {
+                                                create_log = false;
+
+                                                UserInRooms::truncate();
+
+                                                Http::get(env('NODREDTRYTURNOFF'));
+                                            }
+                                        }
+                                    }
+
+                                    if (create_log == true) {
+                                        $log = Log::create([
+                                            'user_id' => $user->id,
+                                            'chip_id' => $assignedChip->id,
+                                            'success' => $success,
+                                        ]);
                                     }
 
                                     return response()->json(['message' => 'Log created successfully! User added to room!', 'data' => $log], 201);
