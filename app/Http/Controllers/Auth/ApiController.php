@@ -127,7 +127,7 @@ class ApiController extends Controller
                                 return response()->json(['error' => 'Too many unsuccessful attempts!'], 429);
                             }
                         } else {
-                            if ($userInRooms) {
+                            if ($userInRooms->exists()) {
                                 $userInRooms->delete();
 
                                 return response()->json(['message' => 'User removed from room!'], 200);
