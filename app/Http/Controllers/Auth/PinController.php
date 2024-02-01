@@ -19,6 +19,7 @@ class PinController extends Controller
 
         $r->user()->forceFill([
             'pin' => Hash::make($pin),
+            'attempts' => '0',
         ])->save();
 
         return back()->with('pin', $pin);
